@@ -19,18 +19,22 @@ import io.flutter.view.FlutterView
 import com.imagepicker.features.ImagePicker
 import com.imagepicker.model.Image
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+
 /**
  * ChristianPickerImagePlugin
  */
-class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
+class ChristianPickerImagePlugin : FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
 
     private val view: FlutterView? = null
     private var pendingResult: Result? = null
     private val methodCall: MethodCall? = null
 
     private var context: Context? = null
-    private var activity: Activity? = null
-    private var channel: MethodChannel? = null
+    // private var activity: Activity? = null
+    // private var channel: MethodChannel? = null
     private var messenger: BinaryMessenger? = null
 
     private val REQUEST_CODE_CHOOSE = 1001
@@ -38,13 +42,20 @@ class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityRes
 
     private val NumberOfImagesToSelect = 5
 
-    private constructor(_activity: Activity, _context: Context, _channel: MethodChannel, _messenger: BinaryMessenger) {
-        this.activity = _activity
-        this.context = _context
-        this.channel = _channel
-        this.messenger = _messenger
-    }
+    private lateinit var channel : MethodChannel
+    private var activity: Activity? = null
 
+    // private constructor(_activity: Activity, _context: Context, _channel: MethodChannel, _messenger: BinaryMessenger) {
+    //     this.activity = _activity
+    //     this.context = _context
+    //     this.channel = _channel
+    //     this.messenger = _messenger
+    // }
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(binding.binaryMessenger, "christian_picker_image")
+        channel.setMethodCallHandler(this)
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean {
         return false
@@ -113,10 +124,31 @@ class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityRes
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val channel = MethodChannel(registrar.messenger(), "christian_picker_image")
-            val instance = ChristianPickerImagePlugin(registrar.activity(), registrar.context(), channel, registrar.messenger())
-            registrar.addActivityResultListener(instance);
+            val instance = ChristianPickerImagePlugin().also {
+                it.activity = registrar.activity()
+            }
             channel.setMethodCallHandler(instance)
         }
     }
+
+     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+            channel?.setMethodCallHandler(null)
+        }
+
+        override fun onDetachedFromActivity() {
+            activity = null
+        }
+
+        override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+            activity = binding.activity
+        }
+
+        override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+            activity = binding.activity
+        }
+
+        override fun onDetachedFromActivityForConfigChanges() {
+            activity = null
+        }
 
 }
