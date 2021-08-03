@@ -128,6 +128,8 @@ class ChristianPickerImagePlugin : FlutterPlugin, ActivityAware, MethodCallHandl
                 it.activity = registrar.activity()
             }
             channel.setMethodCallHandler(instance)
+            instance.context = registrar.context()
+            registrar.addRequestPermissionsResultListener(instance)
         }
     }
 
@@ -145,6 +147,7 @@ class ChristianPickerImagePlugin : FlutterPlugin, ActivityAware, MethodCallHandl
 
         override fun onAttachedToActivity(binding: ActivityPluginBinding) {
             activity = binding.activity
+            binding.addRequestPermissionsResultListener(this)
         }
 
         override fun onDetachedFromActivityForConfigChanges() {
