@@ -7,10 +7,17 @@
 
   <application>
     <activity
-        android:name="com.imagepicker.features.ImagePickerActivity"
+        android:name=".ImagePickerActivity"
         android:configChanges="orientation|screenSize"
-        android:theme="@style/ef_AppTheme"/>
+        android:theme="@style/ef_AppTheme">
 
+        <intent-filter>
+            <action android:name="com.christian.christian_picker_image.ImagePickerActivity" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        
+    </activity>
+    
     <provider
         android:name="com.imagepicker.helper.ImagePickerFileProvider"
         android:authorities="${applicationId}.imagepicker.provider"

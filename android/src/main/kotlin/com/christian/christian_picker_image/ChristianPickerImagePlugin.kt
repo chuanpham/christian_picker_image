@@ -123,6 +123,11 @@ class ChristianPickerImagePlugin : FlutterPlugin, ActivityAware, MethodCallHandl
          */
         @JvmStatic
         fun registerWith(registrar: Registrar) {
+            if (registrar.activity() == null) {
+                // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
+                // we stop the registering process immediately because the ImagePicker requires an activity.
+                return
+            }
             val channel = MethodChannel(registrar.messenger(), "christian_picker_image")
             val instance = ChristianPickerImagePlugin().also {
                 it.activity = registrar.activity()
@@ -133,25 +138,25 @@ class ChristianPickerImagePlugin : FlutterPlugin, ActivityAware, MethodCallHandl
         }
     }
 
-     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-            channel?.setMethodCallHandler(null)
-        }
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel?.setMethodCallHandler(null)
+    }
 
-        override fun onDetachedFromActivity() {
-            activity = null
-        }
+    override fun onDetachedFromActivity() {
+        activity = null
+    }
 
-        override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-            activity = binding.activity
-        }
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activity = binding.activity
+    }
 
-        override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-            activity = binding.activity
-            binding.addRequestPermissionsResultListener(this)
-        }
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity
+        binding.addRequestPermissionsResultListener(this)
+    }
 
-        override fun onDetachedFromActivityForConfigChanges() {
-            activity = null
-        }
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
+    }
 
 }
