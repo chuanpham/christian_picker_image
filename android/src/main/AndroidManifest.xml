@@ -12,12 +12,14 @@
         android:theme="@style/ef_AppTheme">
 
         <intent-filter>
-            <action android:name="com.christian.christian_picker_image.ImagePickerActivity" />
+            <action android:name="com.imagepicker.features.ImagePickerActivity" />
             <category android:name="android.intent.category.DEFAULT" />
         </intent-filter>
         
-    </activity>
-    
+        </activity>
+
+        
+
     <provider
         android:name="com.imagepicker.helper.ImagePickerFileProvider"
         android:authorities="${applicationId}.imagepicker.provider"
